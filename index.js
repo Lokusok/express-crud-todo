@@ -3,10 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const { 
   getAllTodos,
+  getTodosByPage,
   appendTodo, 
-  updateTodo, 
   deleteTodo,
-  getTodosByType,
   updateType } = require('./queries.js');
 
 const app = express();
@@ -21,14 +20,18 @@ app.get('/tasks', (req, res ) => {
   });
 });
 
-app.get('/tasks/:type', (req, res) => {
-  getTodosByType(req.params.type).then((data) => {
+app.post('/tasks', (req, res) => {
+  appendTodo(req.body).then((data) => {
     res.status(200).json(data);
   });
 });
 
-app.post('/tasks', (req, res) => {
-  appendTodo(req.body).then((data) => {
+const step = 3;
+app.get('/tasks/:type/:page', (req, res) => {
+  const type = req.params.type;
+  const page = Number(req.params.page) - 1;
+
+  getTodosByPage(step, type, page).then((data) => {
     res.status(200).json(data);
   });
 });
@@ -46,7 +49,9 @@ app.put('/cancel/:id', (req, res) => {
 });
 
 app.put('/overdue/:id', (req, res) => {
-  
+  updateType(req.params.id, 'overdue').then((data) => {
+    res.status(200).json(data);
+  });
 });
 
 app.delete('/tasks/:id', (req, res) => {

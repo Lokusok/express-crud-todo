@@ -25,7 +25,25 @@ const getTodosByType = (type) => {
   });
 };
 
+const getTodosByPage = (step, type, page) => {
+  return new Promise((resolve, reject) => {
+    db.query('SELECT * FROM tasks WHERE type = $1', [type], (err, results) => {
+      if (err) {
+        reject(err);
+      }
+  
+      const allTasks = results.rows;
+      const usersTasks = allTasks.slice(step * page, (step * page) + step);
+      const maxPage = Math.ceil(results.rows.length / step);
+  
+      resolve({ todos: usersTasks, maxPage });
+    });
+  });
+};
+
 const appendTodo = ({ title, description, type, createdAt, expiredAt }) => {
+  console.log({ title, description, type, createdAt, expiredAt })
+
   return new Promise((resolve, reject) => {
     db.query(
       `
@@ -35,6 +53,7 @@ const appendTodo = ({ title, description, type, createdAt, expiredAt }) => {
       [title, description, type, createdAt, expiredAt],
       (err, results) => {
         if (err) {
+          throw err;
           reject(err);
         }
   
@@ -96,4 +115,5 @@ module.exports = {
   deleteTodo,
   getTodosByType,
   updateType,
+  getTodosByPage
 };
