@@ -33,7 +33,7 @@ const getTodosByPage = (step, type, page) => {
       }
   
       const allTasks = results.rows;
-      const usersTasks = allTasks.slice(step * page, (step * page) + step);
+      const usersTasks = typeof page === 'number' ? allTasks.slice(step * page, (step * page) + step) : allTasks;
       const maxPage = Math.ceil(results.rows.length / step);
   
       resolve({ todos: usersTasks, maxPage });
@@ -42,8 +42,6 @@ const getTodosByPage = (step, type, page) => {
 };
 
 const appendTodo = ({ title, description, type, createdAt, expiredAt }) => {
-  console.log({ title, description, type, createdAt, expiredAt })
-
   return new Promise((resolve, reject) => {
     db.query(
       `
@@ -84,7 +82,6 @@ const updateTodo = ({ title, description, type, createdAt, expiredAt, id }) => {
 };
 
 const updateType = (id, type) => {
-  console.log(`update type: ${id}, ${type}`)
   return new Promise((resolve, reject) => {
     db.query("UPDATE tasks SET type = $1 WHERE id = $2", [type, id], (err, results) => {
       if (err) {
