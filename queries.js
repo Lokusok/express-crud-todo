@@ -5,7 +5,6 @@ const getAllTodos = () => {
   return new Promise((resolve, reject) => {
     db.query('SELECT * FROM tasks ORDER BY id DESC', (err, results) => {
       if (err) {
-        throw err;
         reject(err);
       }
 
@@ -32,8 +31,7 @@ const getTodosByPage = (step, type, page) => {
       if (err) {
         reject(err);
       }
-      console.log(results);
-  
+ 
       const allTasks = results.rows;
       const usersTasks = typeof page === 'number' ? allTasks.slice(step * page, (step * page) + step) : allTasks;
       const maxPage = Math.ceil(results.rows.length / step);
