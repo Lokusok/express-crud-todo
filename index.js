@@ -60,4 +60,4 @@ app.delete('/tasks/:id', (req, res) => {
   });
 });
 
-app.listen(port);
+app.listen(port, () => console.log('Start success'));
