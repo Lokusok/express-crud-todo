@@ -33,7 +33,7 @@ const getTodosByPage = (step, type, page) => {
       }
  
       const allTasks = results.rows;
-      const usersTasks = typeof page === 'number' ? allTasks.slice(step * page, (step * page) + step) : allTasks;
+      const usersTasks = typeof page === 'number' && !Number.isNaN(page) ? allTasks.slice(step * page, (step * page) + step) : allTasks;
       const maxPage = Math.ceil(results.rows.length / step);
   
       resolve({ todos: usersTasks, maxPage });
