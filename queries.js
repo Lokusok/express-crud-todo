@@ -1,6 +1,5 @@
 const db = require('./db.js');
 
-
 const getAllTodos = () => {
   return new Promise((resolve, reject) => {
     db.query('SELECT * FROM tasks ORDER BY id DESC', (err, results) => {
@@ -15,13 +14,17 @@ const getAllTodos = () => {
 
 const getTodosByType = (type) => {
   return new Promise((resolve, reject) => {
-    db.query('SELECT * FROM tasks WHERE type = $1 ORDER BY id DESC', [type], (err, results) => {
-      if (err) {
-        reject(err);
+    db.query(
+      'SELECT * FROM tasks WHERE type = $1 ORDER BY id DESC',
+      [type],
+      (err, results) => {
+        if (err) {
+          reject(err);
+        }
+
+        resolve(results.rows);
       }
-  
-      resolve(results.rows);
-    });
+    );
   });
 };
 
@@ -31,11 +34,14 @@ const getTodosByPage = (step, type, page) => {
       if (err) {
         reject(err);
       }
- 
+
       const allTasks = results.rows;
-      const usersTasks = typeof page === 'number' && !Number.isNaN(page) ? allTasks.slice(step * page, (step * page) + step) : allTasks;
+      const usersTasks =
+        typeof page === 'number' && !Number.isNaN(page)
+          ? allTasks.slice(step * page, step * page + step)
+          : allTasks;
       const maxPage = Math.ceil(results.rows.length / step);
-  
+
       resolve({ todos: usersTasks, maxPage });
     });
   });
@@ -53,11 +59,11 @@ const appendTodo = ({ title, description, type, createdAt, expiredAt }) => {
         if (err) {
           reject(err);
         }
-  
-        resolve(results.rows)
+
+        resolve(results.rows);
       }
     );
-  })
+  });
 };
 
 const updateTodo = ({ title, description, type, createdAt, expiredAt, id }) => {
@@ -76,19 +82,23 @@ const updateTodo = ({ title, description, type, createdAt, expiredAt, id }) => {
 
         resolve(results.rows);
       }
-    )
+    );
   });
 };
 
 const updateType = (id, type) => {
   return new Promise((resolve, reject) => {
-    db.query("UPDATE tasks SET type = $1 WHERE id = $2", [type, id], (err, results) => {
-      if (err) {
-        reject(err);
+    db.query(
+      'UPDATE tasks SET type = $1 WHERE id = $2',
+      [type, id],
+      (err, results) => {
+        if (err) {
+          reject(err);
+        }
+
+        resolve(results.rows);
       }
-  
-      resolve(results.rows);
-    });
+    );
   });
 };
 
@@ -98,11 +108,11 @@ const deleteTodo = ({ id }) => {
       if (err) {
         reject(err);
       }
-  
+
       resolve(results.rows);
     });
   });
-}
+};
 
 module.exports = {
   getAllTodos,
@@ -111,5 +121,5 @@ module.exports = {
   deleteTodo,
   getTodosByType,
   updateType,
-  getTodosByPage
+  getTodosByPage,
 };
